@@ -1,0 +1,36 @@
+from typing import List
+import math
+
+class Solution:
+    def findMedianSortedArrays(self, nums1: List[int], nums2: List[int]) -> float:
+        # Ensure nums1 is the smaller array for O(log(min(m,n)))
+        if len(nums1) > len(nums2):
+            nums1, nums2 = nums2, nums1
+
+        m, n = len(nums1), len(nums2)
+        total = m + n
+        half = (total + 1) // 2
+
+        lo, hi = 0, m
+        while lo <= hi:
+            i = (lo + hi) // 2          # cut in nums1
+            j = half - i                # cut in nums2
+
+            left1  = nums1[i - 1] if i > 0 else -math.inf
+            right1 = nums1[i]     if i < m else  math.inf
+            left2  = nums2[j - 1] if j > 0 else -math.inf
+            right2 = nums2[j]     if j < n else  math.inf
+
+            if left1 <= right2 and left2 <= right1:
+                # Correct partition
+                if total % 2 == 1:
+                    return float(max(left1, left2))
+                return (max(left1, left2) + min(right1, right2)) / 2.0
+
+            if left1 > right2:
+                hi = i - 1
+            else:
+                lo = i + 1
+
+        # Should never reach here if inputs are valid
+        raise ValueError("Invalid input arrays")
